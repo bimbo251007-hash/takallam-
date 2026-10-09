@@ -18,15 +18,39 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install @capacitor-community/text-to-speech@5 --legacy-peer-deps
 
       - name: Prepare web files
         run: |
           mkdir -p www
           cp index.html www/
+          cat > www/tts-native.js <<'EOF'
+          (function(){
+            var C=window.Capacitor;
+            if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
+            var TTS=C.registerPlugin("TextToSpeech");
+            var fake={name:"Arabic (device)",lang:"ar-SA",voiceURI:"native-ar",localService:true,default:true};
+            function U(t){this.text=t;this.lang="ar-SA";this.rate=1;this.pitch=1;this.volume=1;this.voice=null;this.onend=null;this.onerror=null}
+            window.SpeechSynthesisUtterance=U;
+            Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
+              paused:false,
+              getVoices:function(){return [fake]},
+              addEventListener:function(){},
+              speak:function(u){
+                TTS.speak({text:u.text,lang:"ar-SA",rate:u.rate,pitch:u.pitch,volume:u.volume,category:"ambient"})
+                  .then(function(){if(u.onend)u.onend()},function(){if(u.onerror)u.onerror()});
+              },
+              cancel:function(){TTS.stop().catch(function(){})},
+              resume:function(){}
+            }});
+          })();
+          EOF
+          sed -i 's#<head>#<head><script src="tts-native.js"></script>#' www/index.html
 
       - name: Create Android project
         run: npx cap add android
