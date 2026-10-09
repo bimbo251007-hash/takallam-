@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -34,19 +37,80 @@ jobs:
             var C=window.Capacitor;
             if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
             var TTS=C.registerPlugin("TextToSpeech");
-            var fake={name:"Arabic (device)",lang:"ar-SA",voiceURI:"native-ar",localService:true,default:true};
+            var gen=0,langP=null,audio=null,shown=false;
+            function msg(t){
+              if(shown||!document.body)return;shown=true;
+              var d=document.createElement("div");
+              d.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#fff3cd;color:#000;padding:10px;font-size:13px;z-index:99999;direction:ltr";
+              d.textContent=t;d.onclick=function(){d.remove()};
+              document.body.appendChild(d);
+            }
+            function getLang(){
+              if(!langP)langP=TTS.getSupportedLanguages().then(function(r){
+                var l=(r&&r.languages)||[];
+                return l.filter(function(x){return x==="ar-EG"})[0]||l.filter(function(x){return /^ar/i.test(x)})[0]||null;
+              }).catch(function(){return "ar-SA"});
+              return langP;
+            }
+            function nativeSpeak(u){
+              return getLang().then(function(L){
+                if(!L)throw new Error("no arabic voice on device");
+                var t0=Date.now();
+                return TTS.speak({text:u.text,lang:L,rate:u.rate,pitch:u.pitch,volume:u.volume,category:"ambient"}).then(function(){
+                  if(Date.now()-t0<250&&u.text.trim().length>2)throw new Error("native speech silent");
+                });
+              });
+            }
+            function chunks(t){
+              var out=[],s=t;
+              while(s.length>180){var i=s.lastIndexOf(" ",180);if(i<50)i=180;out.push(s.slice(0,i));s=s.slice(i)}
+              out.push(s);return out;
+            }
+            function onlineSpeak(u,my){
+              var p=Promise.resolve();
+              chunks(u.text.trim()).forEach(function(part){
+                p=p.then(function(){
+                  if(my!==gen)return;
+                  return new Promise(function(res,rej){
+                    var a=new Audio("https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q="+encodeURIComponent(part));
+                    audio=a;
+                    a.playbackRate=Math.min(1,Math.max(.7,u.rate+.2));
+                    a.onended=res;
+                    a.onerror=function(){rej(new Error("online speech failed"))};
+                    a.play().catch(rej);
+                  });
+                });
+              });
+              return p;
+            }
             function U(t){this.text=t;this.lang="ar-SA";this.rate=1;this.pitch=1;this.volume=1;this.voice=null;this.onend=null;this.onerror=null}
             window.SpeechSynthesisUtterance=U;
+            var fake={name:"Arabic (device)",lang:"ar-SA",voiceURI:"native-ar",localService:true,default:true};
             Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
               paused:false,
               getVoices:function(){return [fake]},
               addEventListener:function(){},
-              speak:function(u){
-                TTS.speak({text:u.text,lang:"ar-SA",rate:u.rate,pitch:u.pitch,volume:u.volume,category:"ambient"})
-                  .then(function(){if(u.onend)u.onend()},function(){if(u.onerror)u.onerror()});
+              resume:function(){},
+              cancel:function(){
+                gen++;
+                TTS.stop().catch(function(){});
+                if(audio){try{audio.pause()}catch(e){}audio=null}
               },
-              cancel:function(){TTS.stop().catch(function(){})},
-              resume:function(){}
+              speak:function(u){
+                var my=gen;
+                if(!u.text||!u.text.trim()||u.volume===0){if(u.onend)u.onend();return}
+                nativeSpeak(u).catch(function(e1){
+                  if(my!==gen)return;
+                  return onlineSpeak(u,my).catch(function(e2){
+                    if(my===gen)msg("Speech failed: "+(e1&&e1.message||e1)+" | "+(e2&&e2.message||e2));
+                    throw e2;
+                  });
+                }).then(function(){
+                  if(my===gen&&u.onend)u.onend();
+                },function(){
+                  if(my===gen&&u.onerror)u.onerror();
+                });
+              }
             }});
           })();
           EOF
@@ -57,7 +121,7 @@ jobs:
 
       - name: Allow microphone
         run: |
-          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <application#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application#' android/app/src/main/AndroidManifest.xml
 
       - name: Sync web files
         run: npx cap sync android
@@ -73,3 +137,11 @@ jobs:
         with:
           name: Takallam-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publish release with direct link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk takallam.apk
+          gh release delete latest --cleanup-tag --yes --repo ${{ github.repository }} || true
+          gh release create latest takallam.apk --repo ${{ github.repository }} --title "Takallam APK" --notes "Latest build" --latest
