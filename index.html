@@ -1,0 +1,1013 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}[hidden]{display:none!important}</style></head><body><title>تَكَلَّم</title>
+<style>
+:root{
+  --bg:#fff8ee;--ink:#2b2a4c;--muted:#6f6c8f;--card:#fff;--line:#eee6d8;
+  --purple:#6c5ce7;--blue:#2e86de;--green:#20bf6b;--orange:#fa8231;--pink:#e84393;--red:#eb4d4b;--yellow:#fed330;
+  --r:24px;--shadow:0 8px 24px rgba(75,60,140,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:18px}
+body{margin:0;font-family:"Segoe UI","Noto Sans Arabic","Noto Naskh Arabic",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);
+  background-image:radial-gradient(circle at 10% 0%,#ffe9c7 0,transparent 35%),radial-gradient(circle at 100% 20%,#e4defd 0,transparent 35%);min-height:100vh}
+.app{max-width:760px;margin:auto;padding:0 0 24px}
+button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--blue);outline-offset:2px}
+
+/* header */
+header{padding:14px 16px 10px;display:flex;align-items:center;gap:8px}
+.mascot{font-size:42px;line-height:1;animation:bob 3s ease-in-out infinite}
+.brand{flex:1}
+.logo{font-size:28px;font-weight:900;color:var(--purple);letter-spacing:.5px}
+.sub{font-size:.78rem;color:var(--muted)}
+.icon-btn{width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:var(--shadow);font-size:24px;display:grid;place-items:center}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-4deg)}}
+
+/* screens */
+.screen{display:none;padding:0 16px;animation:pop .25s ease}
+.screen.active{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin:12px 0;box-shadow:var(--shadow)}
+h2{font-size:1.15rem;margin:0 0 12px}
+
+/* bubble */
+.bubble{background:#fff;border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);position:relative;font-weight:700;display:flex;gap:10px;align-items:center}
+.bubble .say{flex:none}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{text-align:center;border-radius:18px;padding:12px 4px;background:#f1eefe}
+.stat:nth-child(2){background:#e6f9ee}.stat:nth-child(3){background:#fff1e0}
+.num{font-size:1.6rem;font-weight:900;color:var(--purple)}
+.stat:nth-child(2) .num{color:var(--green)}.stat:nth-child(3) .num{color:var(--orange)}
+.stat small{display:block;color:var(--muted);font-size:.72rem}
+.lvbar{height:12px;border-radius:12px;background:#ece7fb;margin-top:12px;overflow:hidden}
+.lvbar i{display:block;height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:12px;transition:width .5s}
+.lvtxt{font-size:.72rem;color:var(--muted);margin-top:6px;text-align:center}
+
+/* menu */
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tile{border-radius:26px;padding:20px 10px 16px;color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 8px 0 rgba(0,0,0,.14);transition:transform .1s,box-shadow .1s;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.tile:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.tile .ico{font-size:50px;line-height:1}
+.tile .st{font-size:.95rem;letter-spacing:2px;min-height:1.3em;opacity:.95}
+.t-vocab{background:linear-gradient(160deg,#a29bfe,#6c5ce7)}
+.t-sound{background:linear-gradient(160deg,#55efc4,#00b894)}
+.t-sentence{background:linear-gradient(160deg,#ffb26b,#fa8231)}
+.t-memory{background:linear-gradient(160deg,#fd79a8,#e84393)}
+
+/* exercise */
+.topbar{display:flex;align-items:center;gap:10px;margin-top:6px}
+.pill{background:#fff;border-radius:999px;padding:12px 18px;font-weight:800;box-shadow:var(--shadow);font-size:.95rem}
+.progress{flex:1;height:16px;border-radius:16px;background:#e9e3d6;overflow:hidden}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),#7bed9f);transition:width .4s;border-radius:16px}
+.qcount{font-weight:800;color:var(--muted);font-size:.85rem;min-width:3em;text-align:center}
+.prompt{font-size:1.35rem;font-weight:900;text-align:center;margin:6px 0 4px}
+.pic{font-size:104px;line-height:1.1;text-align:center;margin:6px 0;min-height:112px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.12))}
+.pic.pair{font-size:76px}
+.pic.seq{font-size:84px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.seq .it{background:#fff;border-radius:22px;padding:8px 14px;box-shadow:var(--shadow);text-align:center;transition:transform .2s,background .2s,opacity .3s;opacity:.35}
+.seq .it small{display:block;font-size:1.05rem;font-weight:800;color:var(--ink)}
+.seq .it.on{opacity:1;transform:scale(1.12);background:#fff3c4}
+.seq .it.done{opacity:1}
+.letter{font-size:130px;font-weight:900;text-align:center;color:var(--green);line-height:1.2}
+.listen{display:flex;justify-content:center;margin:8px 0}
+.say{background:var(--blue);color:#fff;border-radius:999px;padding:12px 22px;font-weight:800;font-size:1rem;display:inline-flex;gap:8px;align-items:center;box-shadow:0 5px 0 #1b5fa8}
+.say:active{transform:translateY(3px);box-shadow:0 2px 0 #1b5fa8}
+.say.playing{animation:pulse .8s infinite}
+.say.mini{width:48px;height:48px;padding:0;justify-content:center;font-size:20px;box-shadow:none;flex:none}
+@keyframes pulse{50%{transform:scale(1.07);background:var(--purple)}}
+.choices{display:grid;gap:12px;margin-top:14px}
+.choices.c2{grid-template-columns:1fr 1fr}
+.choices.c1{grid-template-columns:1fr}
+.chwrap{position:relative;display:flex}
+.choices .chwrap:last-child:nth-child(odd){grid-column:1/-1}
+.choice{flex:1;background:#fff;border-radius:22px;padding:14px 8px;font-size:1.25rem;font-weight:900;border:4px solid #e7e0f7;box-shadow:0 6px 0 #e0d9f2;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .08s}
+.choice:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #e0d9f2}
+.choice .em{font-size:52px;line-height:1.1}
+.choice.sentence{font-size:1.15rem}
+.choice.right{border-color:var(--green);background:#e8fff1;animation:hop .5s}
+.choice.wrong{border-color:var(--red);background:#fff0f0;animation:shake .4s}
+.choice:disabled{cursor:default}
+.chwrap .say.mini{position:absolute;top:6px;inset-inline-start:6px;width:38px;height:38px;font-size:16px;background:#e8f1fc;color:var(--blue);box-shadow:none}
+.chwrap .choice{padding-top:20px}
+@keyframes shake{25%{transform:translateX(8px)}75%{transform:translateX(-8px)}}
+@keyframes hop{40%{transform:translateY(-10px) scale(1.04)}}
+.feedback{text-align:center;font-weight:900;font-size:1.3rem;min-height:2em;margin-top:14px}
+.feedback.ok{color:var(--green)}.feedback.no{color:var(--orange)}
+.note{text-align:center;color:var(--muted);font-size:.78rem;margin-top:8px}
+
+/* finish */
+.finish{text-align:center}
+.stars{font-size:62px;letter-spacing:4px}
+.stars .off{filter:grayscale(1);opacity:.25}
+.big{font-size:1.6rem;font-weight:900;margin:6px 0}
+.btn{display:block;width:100%;padding:16px;border-radius:20px;font-weight:900;font-size:1.1rem;margin-top:12px;background:var(--purple);color:#fff;box-shadow:0 6px 0 #4b3fb5}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #4b3fb5}
+.btn.light{background:#efeafc;color:var(--purple);box-shadow:0 6px 0 #d9d0f5}
+.btn.danger{background:#ffe9e9;color:var(--red);box-shadow:0 6px 0 #f6caca}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+
+/* settings / progress */
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.set:last-child{border:0}
+.set label{font-weight:800;flex:1}
+.set small{display:block;color:var(--muted);font-weight:400;font-size:.72rem}
+select{font:inherit;font-size:.85rem;padding:10px;border-radius:12px;border:2px solid #ddd5f3;background:#fff;max-width:62%;min-width:0}
+.switch{width:64px;height:36px;border-radius:36px;background:#cfc9e6;position:relative;flex:none;transition:.2s}
+.switch::after{content:"";position:absolute;top:4px;inset-inline-start:4px;width:28px;height:28px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 4px #0003}
+.switch[aria-checked=true]{background:var(--green)}
+.switch[aria-checked=true]::after{inset-inline-start:32px}
+.seg{display:flex;background:#efeafc;border-radius:14px;padding:4px;gap:4px}
+.seg button{background:transparent;padding:9px 14px;border-radius:11px;font-weight:800;font-size:.85rem;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--purple);color:#fff}
+.warn{background:#fff3cd;border:2px solid #f6d77a;border-radius:18px;padding:12px 14px;font-size:.82rem;line-height:1.7;margin:12px 0}
+.warn b{display:block;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:10px 4px;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:700;font-size:.72rem}
+td:first-child,th:first-child{text-align:start}
+.mini-bar{height:8px;border-radius:8px;background:#ece7fb;overflow:hidden;margin-top:4px}
+.mini-bar i{display:block;height:100%;background:var(--green)}
+.hist{display:flex;gap:4px;align-items:flex-end;height:46px;justify-content:center}
+.hist i{width:10px;background:var(--purple);border-radius:4px 4px 0 0;display:block;min-height:3px}
+
+.menu .tile:last-child:nth-child(odd){grid-column:1/-1}
+.t-lisp{background:linear-gradient(160deg,#74b9ff,#0984e3)}
+.t-mem2{background:linear-gradient(160deg,#fd79a8,#e84393)}
+.chip{display:inline-block;background:#f1eefe;color:var(--purple);border-radius:999px;padding:4px 14px;font-size:.78rem;font-weight:800}
+.center{text-align:center}
+.bigword{font-size:2.8rem;font-weight:900;text-align:center;margin:2px 0 6px}
+mark{background:#ffe27a;color:inherit;border-radius:10px;padding:0 5px}
+.tipbox{background:#eef6ff;border-radius:16px;padding:10px 14px;margin:10px 0;font-size:.85rem;line-height:1.9}
+.tipbox summary{font-weight:800;cursor:pointer}
+.tipbox .say{margin-top:6px;font-size:.85rem;padding:8px 16px}
+.say.slow{background:var(--orange);box-shadow:0 5px 0 #c4631a}
+.mic{background:var(--pink);color:#fff;border-radius:999px;padding:14px 26px;font-weight:900;font-size:1.05rem;box-shadow:0 5px 0 #b02d71;display:inline-flex;gap:8px;align-items:center}
+.mic.alt{background:#6c5ce7;box-shadow:0 5px 0 #4b3fb5;font-size:.9rem;padding:12px 18px}
+.mic.rec{animation:pulse .7s infinite}
+.heard{background:#fff8e1;border-radius:14px;padding:8px 12px;margin:8px 0;font-size:.85rem;text-align:center}
+.users{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.user{background:#fff;border-radius:24px;padding:16px 8px;font-weight:900;font-size:1.1rem;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:4px;border:4px solid transparent;min-height:130px;justify-content:center}
+.user:active{transform:scale(.97)}
+.user.cur{border-color:var(--purple)}
+.user .av{font-size:58px;line-height:1.1}
+.user.add{background:#efeafc;color:var(--purple)}
+.avs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.avs button{font-size:30px;width:56px;height:56px;border-radius:16px;background:#f4f1fc;border:3px solid transparent}
+.avs button[aria-pressed=true]{border-color:var(--purple);background:#e5dffb}
+input.name{width:100%;font:inherit;font-size:1.2rem;padding:14px;border-radius:16px;border:3px solid #ddd5f3;text-align:center;color:var(--ink)}
+.sub2{color:var(--muted);font-size:.8rem;text-align:center;margin:-4px 0 8px}
+.pill.ghost{box-shadow:none;background:#efeafc}
+.seq.n5 .it,.seq.n6 .it{padding:6px 8px}
+.pic.seq.n4,.pic.seq.n5,.pic.seq.n6{font-size:60px}
+.pic.seq.n5 small,.pic.seq.n6 small,.pic.seq.n4 small{font-size:.85rem}
+.pic.seq.n6{gap:8px}
+footer{text-align:center;color:var(--muted);font-size:.72rem;padding:14px 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(max-width:420px){html{font-size:16px}.pic{font-size:88px}.letter{font-size:108px}.tile{min-height:136px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+<header>
+  <div class="mascot" aria-hidden="true">🦉</div>
+  <div class="brand"><div class="logo">تَكَلَّم</div><div class="sub">تدريب ممتع على الكلام</div></div>
+  <button class="icon-btn" id="btnUser" aria-label="تغيير المستخدم" title="تغيير المستخدم">👤</button>
+  <button class="icon-btn" id="btnProgress" aria-label="متابعة التقدم" title="متابعة التقدم">📈</button>
+  <button class="icon-btn" id="btnSettings" aria-label="الإعدادات" title="الإعدادات">⚙️</button>
+</header>
+
+<!-- الرئيسية -->
+<main id="home" class="screen active">
+  <div class="bubble"><button class="say mini" id="helloBtn" data-say="أهلاً بك!" aria-label="اسمع">🔊</button><span id="helloTxt">أهلاً بك! 👇</span></div>
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><div class="num" id="stSessions">0</div><small>جلسات</small></div>
+      <div class="stat"><div class="num" id="stAvg">0%</div><small>متوسط النتيجة</small></div>
+      <div class="stat"><div class="num" id="stLevel">1</div><small>المستوى</small></div>
+    </div>
+    <div class="lvbar" role="progressbar" aria-label="التقدم للمستوى التالي"><i id="lvFill" style="width:0"></i></div>
+    <div class="lvtxt" id="lvTxt"></div>
+  </div>
+  <div id="voiceWarn"></div>
+  <div class="menu" id="menu"></div>
+</main>
+
+<!-- من سيلعب؟ -->
+<section id="login" class="screen">
+  <div class="bubble"><button class="say mini" data-say="من سيلعب اليوم؟ اختر اسمك." aria-label="اسمع">🔊</button><span>من سيلعب اليوم؟ 👋</span></div>
+  <div class="card">
+    <div class="users" id="loginList"></div>
+  </div>
+  <div class="card" id="loginForm" hidden>
+    <h2>➕ طفل جديد</h2>
+    <label class="sr" for="nameIn">الاسم</label>
+    <input class="name" id="nameIn" maxlength="20" placeholder="اكتب الاسم هنا" autocomplete="off">
+    <div class="avs" id="avs" role="group" aria-label="اختر صورتك"></div>
+    <div class="sub2">سيناديك البرنامج باسمك: «أحسنت يا ...»</div>
+    <button class="btn" id="btnCreate">ابدأ اللعب 🚀</button>
+    <div class="note" id="loginErr" style="color:var(--red)"></div>
+  </div>
+  <div class="note">الملفات محفوظة على هذا الجهاز فقط ولا تُرسل لأي مكان.</div>
+</section>
+
+<!-- قائمة المجموعة -->
+<section id="group" class="screen">
+  <div class="topbar"><button class="pill" data-go="home">→ الرئيسية</button></div>
+  <div class="card"><h2 id="groupTitle"></h2><div class="sub2" id="groupSub"></div><div class="menu" id="groupMenu"></div></div>
+</section>
+
+<!-- التمرين -->
+<section id="exercise" class="screen" aria-live="polite">
+  <div class="topbar">
+    <button class="pill" id="btnBack" aria-label="رجوع">→ الرئيسية</button>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="qcount" id="qcount"></div>
+  </div>
+  <div class="card" id="qcard"></div>
+</section>
+
+<!-- الإعدادات -->
+<section id="settings" class="screen">
+  <div class="topbar"><button class="pill" data-go="home">→ الرئيسية</button></div>
+  <div class="card">
+    <h2>⚙️ إعدادات الصوت</h2>
+    <div class="set"><label id="lblVoice">الصوت والنطق<small>قراءة الأسئلة والكلمات بصوت عالٍ</small></label><button class="switch" id="swVoice" role="switch" aria-labelledby="lblVoice"></button></div>
+    <div class="set"><label id="lblSfx">المؤثرات الصوتية<small>نغمات الإجابة الصحيحة والخطأ</small></label><button class="switch" id="swSfx" role="switch" aria-labelledby="lblSfx"></button></div>
+    <div class="set"><label id="lblAuto">قراءة السؤال تلقائيًا<small>يُقرأ السؤال عند ظهوره</small></label><button class="switch" id="swAuto" role="switch" aria-labelledby="lblAuto"></button></div>
+    <div class="set"><label>سرعة الكلام</label>
+      <div class="seg" id="segRate"><button data-rate="0.55">بطيء جدًا</button><button data-rate="0.75">بطيء</button><button data-rate="0.95">عادي</button></div></div>
+    <div class="set"><label for="selVoice">صوت القارئ<small id="voiceInfo"></small></label><select id="selVoice"></select></div>
+    <button class="btn light" id="btnTest">🔊 جرّب الصوت</button>
+    <div id="voiceHelp"></div>
+  </div>
+  <div class="card">
+    <h2>👤 الملف الحالي</h2>
+    <div id="curUserInfo" class="sub2"></div>
+    <button class="btn light" data-go="login">تبديل المستخدم</button>
+    <button class="btn danger" id="btnDelUser">حذف هذا الملف</button>
+  </div>
+  <div class="card">
+    <h2>💾 البيانات</h2>
+    <button class="btn danger" id="btnReset">مسح نتائج هذا الملف</button>
+  </div>
+</section>
+
+<!-- التقدم -->
+<section id="progress" class="screen">
+  <div class="topbar"><button class="pill" data-go="home">→ الرئيسية</button></div>
+  <div class="card"><h2>📈 متابعة التقدم</h2><div id="progBody"></div></div>
+  <div class="card"><h2>آخر الجلسات</h2><div id="progLog"></div></div>
+</section>
+
+<footer>نسخة تعليمية تدريبية — لا تُغني عن جلسات الأخصائي ولا تُستخدم للتشخيص الطبي</footer>
+</div>
+
+<script>
+"use strict";
+document.documentElement.lang="ar";document.documentElement.dir="rtl";
+/* ============================================================
+   تخزين آمن (يعمل حتى لو localStorage ممنوع)
+   ============================================================ */
+const Store=(()=>{
+  const mem={};let ok=true;
+  try{localStorage.setItem("__t","1");localStorage.removeItem("__t")}catch(e){ok=false}
+  return{
+    get(k,d){try{const v=ok?localStorage.getItem(k):mem[k];return v==null?d:JSON.parse(v)}catch(e){return d}},
+    set(k,v){try{const s=JSON.stringify(v);ok?localStorage.setItem(k,s):mem[k]=s}catch(e){mem[k]=JSON.stringify(v)}},
+    del(k){try{ok?localStorage.removeItem(k):delete mem[k]}catch(e){}}
+  };
+})();
+
+/* ============================================================
+   نظام الصوت
+   1) ملفات صوتية مسجّلة (اختياري) — الأفضل جودة: ضعها في مجلد audio/
+      وسجّلها في AUDIO_PACK  { "قطة": "audio/qitta.mp3" }
+   2) النطق الآلي للمتصفح (Web Speech) مع اختيار أفضل صوت عربي
+   3) مؤثرات صوتية مولّدة بـ WebAudio (بدون ملفات)
+   ============================================================ */
+const AUDIO_PACK={};   // نص → رابط ملف صوتي مسجّل (يُقدَّم على النطق الآلي)
+
+const Settings=Object.assign({voice:true,sfx:true,auto:true,rate:0.75,voiceURI:""},Store.get("tk_settings",{}));
+const saveSettings=()=>Store.set("tk_settings",Settings);
+
+const Sound=(()=>{
+  const tts="speechSynthesis" in window&&"SpeechSynthesisUtterance" in window;
+  let voices=[],cur=null,curAudio=null,gen=0,unlocked=false,ctx=null,keepTimer=null;
+  const listeners=[];
+
+  function refresh(){
+    if(!tts)return;
+    voices=speechSynthesis.getVoices()||[];
+    listeners.forEach(f=>f());
+  }
+  if(tts){
+    refresh();
+    if(speechSynthesis.addEventListener)speechSynthesis.addEventListener("voiceschanged",refresh);
+    else speechSynthesis.onvoiceschanged=refresh;
+    // بعض المتصفحات لا ترسل voiceschanged — نعيد المحاولة
+    let tries=0;const t=setInterval(()=>{if(voices.length||++tries>10)clearInterval(t);else refresh()},400);
+  }
+
+  const arVoices=()=>voices.filter(v=>/^ar([-_]|$)/i.test(v.lang)||/arab|عرب/i.test(v.name));
+  function pickVoice(){
+    const ar=arVoices();
+    if(Settings.voiceURI){const m=ar.find(v=>v.voiceURI===Settings.voiceURI);if(m)return m}
+    const score=v=>{
+      let s=0;
+      if(/^ar[-_]EG/i.test(v.lang))s+=30;       // مصري أولًا
+      else if(/^ar[-_]SA/i.test(v.lang))s+=20;
+      if(/google|neural|natural|online|enhanced|premium/i.test(v.name))s+=15; // أصوات أعلى جودة
+      if(!v.localService)s+=2;
+      if(v.default)s+=1;
+      return s;
+    };
+    return ar.sort((a,b)=>score(b)-score(a))[0]||null;
+  }
+
+  // يجب فتح الصوت داخل لمسة المستخدم (iOS / Safari / Chrome)
+  function unlock(){
+    if(unlocked)return;unlocked=true;
+    try{
+      ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();
+      if(ctx.state==="suspended")ctx.resume();
+    }catch(e){}
+    if(tts){try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}
+  }
+  ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,unlock,{once:true,passive:true,capture:true}));
+
+  function stop(){
+    gen++;
+    clearInterval(keepTimer);
+    if(tts)try{speechSynthesis.cancel()}catch(e){}
+    if(curAudio){try{curAudio.pause()}catch(e){}curAudio=null}
+    document.querySelectorAll(".say.playing").forEach(b=>b.classList.remove("playing"));
+  }
+
+  const clean=t=>String(t).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️]/gu,"").replace(/\s+/g," ").trim();
+
+  /** ينطق نصًا ويُرجع Promise ينتهي عند انتهاء النطق (أو فشله) */
+  function speak(text,{force=false,rate=null,btn=null}={}){
+    if(!Settings.voice&&!force)return Promise.resolve();
+    const say=clean(text);if(!say)return Promise.resolve();
+    stop();const my=gen;
+    if(btn)btn.classList.add("playing");
+    const done=()=>{if(btn)btn.classList.remove("playing")};
+
+    // 1) تسجيل صوتي جاهز
+    const file=AUDIO_PACK[say];
+    const viaTTS=()=>new Promise(res=>{
+      if(!tts){res();return}
+      const u=new SpeechSynthesisUtterance(say);
+      const v=pickVoice();
+      if(v){u.voice=v;u.lang=v.lang}else u.lang="ar-SA";
+      const r=rate??Settings.rate;
+      u.rate=r;u.pitch=1.05;u.volume=1;
+      cur=u; // مرجع يمنع جمع القمامة (Chrome لا يُطلق onend بدونه)
+      let fin=false;
+      const end=()=>{if(fin)return;fin=true;clearTimeout(fb);clearInterval(keepTimer);res()};
+      u.onend=end;u.onerror=end;
+      const fb=setTimeout(end,Math.max(3000,say.length*220/r)); // احتياطي لو لم يصل onend
+      // تأخير بسيط بعد cancel() لتفادي ابتلاع الأمر في Chrome
+      setTimeout(()=>{
+        if(my!==gen){end();return}
+        try{
+          if(speechSynthesis.paused)speechSynthesis.resume();
+          speechSynthesis.speak(u);
+        }catch(e){end()}
+      },60);
+    });
+
+    const p=file?new Promise(res=>{
+      const a=new Audio(file);curAudio=a;
+      a.playbackRate=Math.min(1.2,Math.max(.6,Settings.rate/.75));
+      a.onended=()=>res(true);a.onerror=()=>res(false);
+      a.play().catch(()=>res(false));
+    }).then(ok=>ok||my!==gen?undefined:viaTTS()):viaTTS();
+    return p.then(done,done);
+  }
+
+  /* ----- مؤثرات صوتية ----- */
+  function tone(freq,t0,dur,type="sine",vol=.18){
+    if(!ctx)return;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,ctx.currentTime+t0);
+    g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t0+.02);
+    g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+t0+dur);
+    o.connect(g).connect(ctx.destination);
+    o.start(ctx.currentTime+t0);o.stop(ctx.currentTime+t0+dur+.05);
+  }
+  function sfx(name){
+    if(!Settings.sfx)return;
+    try{
+      ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();
+      if(ctx.state==="suspended")ctx.resume();
+      if(name==="right"){tone(660,0,.14,"triangle");tone(880,.1,.14,"triangle");tone(1175,.2,.3,"triangle")}
+      else if(name==="wrong"){tone(330,0,.18,"sine",.14);tone(262,.16,.28,"sine",.14)}
+      else if(name==="win"){[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.11,.26,"triangle"))}
+      else if(name==="tap"){tone(520,0,.06,"sine",.08)}
+    }catch(e){}
+  }
+
+  return{
+    supported:tts,speak,stop,sfx,unlock,pickVoice,arVoices,
+    onChange:f=>listeners.push(f),
+    hasArabic:()=>!tts?false:arVoices().length>0||Object.keys(AUDIO_PACK).length>0,
+    allCount:()=>voices.length
+  };
+})();
+
+/* ============================================================
+   بنك الأسئلة
+   ============================================================ */
+const W=[ // كلمة + صورة
+  ["قطة","🐱"],["تفاحة","🍎"],["سيارة","🚗"],["كلب","🐶"],["موزة","🍌"],["بيت","🏠"],
+  ["شمس","☀️"],["قمر","🌙"],["سمكة","🐟"],["كتاب","📖"],["كرة","⚽"],["وردة","🌹"],
+  ["حذاء","👟"],["ماء","💧"],["باب","🚪"],["ساعة","⏰"],["بطة","🦆"],["عنب","🍇"],
+  ["شجرة","🌳"],["طائرة","✈️"],["قلم","✏️"],["جمل","🐪"],["تمرة","🌴"],["مفتاح","🔑"]
+].map(([w,e])=>({w,e}));
+const LETTERS={"س":"السين","م":"الميم","ب":"الباء","ك":"الكاف","ق":"القاف","ش":"الشين","ع":"العين","و":"الواو","ح":"الحاء","ت":"التاء","ط":"الطاء","ج":"الجيم"};
+const firstLetter=w=>w[0];
+const SENT=[
+  ["👦🍎","الولد يأكل التفاحة",["التفاحة تأكل الولد","الولد ينام"]],
+  ["👧📖","البنت تقرأ الكتاب",["الكتاب يقرأ البنت","البنت تشرب الماء"]],
+  ["🐱🐟","القطة تأكل السمكة",["السمكة تأكل القطة","القطة تقرأ الكتاب"]],
+  ["🐶⚽","الكلب يلعب بالكرة",["الكرة تلعب بالكلب","الكلب يشرب الكتاب"]],
+  ["👦💧","الولد يشرب الماء",["الماء يشرب الولد","الولد يقرأ الماء"]],
+  ["👧🚗","البنت تركب السيارة",["السيارة تركب البنت","البنت تأكل السيارة"]],
+  ["👧🌹","البنت تشم الوردة",["الوردة تشم البنت","البنت تأكل الباب"]],
+  ["👦✏️","الولد يكتب بالقلم",["القلم يكتب بالولد","الولد يشرب القلم"]]
+];
+const ORD=["الأولى","الثانية","الثالثة","الرابعة","الخامسة","السادسة"];
+
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const sample=(a,n)=>shuffle(a).slice(0,n);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const ROUND=6;
+const EX={
+  vocab:{title:"المفردات",ico:"🧩",cls:"t-vocab",build(){
+    return sample(W,ROUND).map(t=>{
+      const opts=shuffle([t,...sample(W.filter(x=>x.w!==t.w),3)]);
+      return{kind:"pic",pic:t.e,prompt:"ما هذا؟",say:"ما هذا؟",answer:t.w,
+        choices:opts.map(o=>({id:o.w,label:o.w,say:o.w}))};
+    });}},
+  sound:{title:"التمييز السمعي",ico:"👂",cls:"t-sound",build(){
+    const out=[];
+    const letters=sample(Object.keys(LETTERS).filter(l=>W.some(x=>firstLetter(x.w)===l)),ROUND);
+    letters.forEach((L,i)=>{
+      if(i%2===0){ // أي كلمة تبدأ بصوت؟
+        const good=sample(W.filter(x=>firstLetter(x.w)===L),1)[0];
+        const bad=sample(W.filter(x=>firstLetter(x.w)!==L),2);
+        out.push({kind:"letter",letter:L,prompt:"أي كلمة تبدأ بحرف "+LETTERS[L]+"؟",
+          say:"أي كلمة تبدأ بحرف "+LETTERS[L]+"؟ "+L,answer:good.w,
+          choices:shuffle([good,...bad]).map(o=>({id:o.w,label:o.w,em:o.e,say:o.w}))});
+      }else{ // اسمع الكلمة واختر الصورة
+        const t=sample(W,1)[0];
+        out.push({kind:"hear",prompt:"اسمع الكلمة، ثم اختر الصورة",say:t.w,answer:t.w,
+          choices:shuffle([t,...sample(W.filter(x=>x.w!==t.w),2)]).map(o=>({id:o.w,em:o.e,say:o.w,aria:o.w}))});
+      }
+    });
+    return out;}},
+  sentence:{title:"تكوين الجمل",ico:"📝",cls:"t-sentence",build(){
+    return sample(SENT,ROUND).map(([p,a,bad])=>({kind:"pic",pic:p,pair:true,
+      prompt:"اختر الجملة الصحيحة",say:"اختر الجملة الصحيحة",answer:a,
+      choices:shuffle([a,...bad]).map(s=>({id:s,label:s,say:s,sentence:true}))}));}}
+};
+
+/* ---- قسم الذاكرة: 5 مستويات (2 → 6 صور) ---- */
+const MEM_ICO=["2️⃣","3️⃣","4️⃣","5️⃣","6️⃣"];
+function memBuild(n){return()=>Array.from({length:5},()=>{
+  const seq=sample(W,n),pos=rnd(n),t=seq[pos];
+  const inSeq=sample(seq.filter(x=>x!==t),Math.min(2,n-1));
+  const outs=sample(W.filter(x=>!seq.includes(x)),3-inSeq.length);
+  return{kind:"memory",seq,prompt:"ما الكلمة "+ORD[pos]+"؟",say:"ما الكلمة "+ORD[pos]+"؟",answer:t.w,
+    choices:shuffle([t,...inSeq,...outs]).map(o=>({id:o.w,label:o.w,em:o.e,say:o.w}))};
+});}
+for(let n=2;n<=6;n++)EX["mem"+n]={title:`ذاكرة ${n} صور`,ico:MEM_ICO[n-2],cls:"t-memory",group:"memory",n,build:memBuild(n),desc:`تذكّر ${n} صور بالترتيب`};
+
+/* ---- قسم اللدغة (اللثغة): تدريب نطق ---- */
+const LISP0={
+ "س":{name:"السين",tip:"أطبق الأسنان برفق، واجعل اللسان مسطحًا خلف الأسنان السفلية (لا تُخرجه بين الأسنان)، ثم انفخ هواءً رفيعًا كصوت الأفعى: سسسس.",
+   words:[["سمكة","🐟"],["سيارة","🚗"],["ساعة","⏰"],["سلحفاة","🐢"],["أسد","🦁"],["عسل","🍯"],["طاووس","🦚"],["جرس","🔔"],["شمس","☀️"]]},
+ "ش":{name:"الشين",tip:"شفتان مستديرتان قليلًا، واللسان مرفوع قليلًا للخلف بدون أن يلمس السقف، ثم انفخ هواءً كما تقول «ششش» لإسكات أحد.",
+   words:[["شمس","☀️"],["شجرة","🌳"],["شمعة","🕯️"],["شوكة","🍴"],["فراشة","🦋"],["عشب","🌿"],["كبش","🐏"],["قرش","🦈"],["مشمش","🍑"]]},
+ "ر":{name:"الراء",tip:"ارفع طرف اللسان خلف الأسنان العليا واتركه يهتز مع الهواء كصوت محرك الدراجة: رررر. ابدأ بتمرين «ترا… ترا…» بسرعة.",
+   words:[["رجل","🦵"],["راديو","📻"],["روبوت","🤖"],["أرنب","🐰"],["شجرة","🌳"],["برتقال","🍊"],["جزر","🥕"],["قمر","🌙"],["بقر","🐄"],["نمر","🐯"]]},
+ "ل":{name:"اللام",tip:"المس بطرف اللسان اللثة خلف الأسنان العليا مباشرة، ودع الصوت يخرج من جانبي اللسان: لللل.",
+   words:[["ليمون","🍋"],["لبن","🥛"],["لعبة","🧸"],["قلم","✏️"],["ملعقة","🥄"],["كلب","🐶"],["جمل","🐪"],["فيل","🐘"],["طفل","👶"]]},
+ "ز":{name:"الزاي",tip:"نفس وضع السين لكن مع اهتزاز الحنجرة كصوت النحلة: زززز. ضع يدك على رقبتك لتشعر بالاهتزاز.",
+   words:[["زرافة","🦒"],["زهرة","🌸"],["زر","🔘"],["موزة","🍌"],["جزر","🥕"],["أرز","🍚"],["خبز","🍞"],["ماعز","🐐"],["فوز","🏆"]]},
+ "ث":{name:"الثاء",tip:"ضع طرف اللسان بين الأسنان بخفة وانفخ الهواء: ثثثث. (هذا الوضع صحيح للثاء فقط، أما السين فاللسان خلف الأسنان).",
+   words:[["ثعلب","🦊"],["ثور","🐂"],["ثلج","❄️"],["ثعبان","🐍"],["ثوب","👕"],["مثلث","🔺"]]},
+ "ك":{name:"الكاف",tip:"ارفع مؤخرة اللسان لتلمس سقف الفم في الخلف، ثم أطلقها بسرعة مع دفعة هواء: ك ك ك. (الخطأ الشائع: النطق «ت»، فاللسان يجب أن يكون في الخلف لا عند الأسنان).",
+   words:[["كلب","🐶"],["كتاب","📖"],["كرة","⚽"],["كوب","☕"],["كعكة","🍰"],["سكين","🔪"],["ديك","🐓"],["سمك","🐟"],["ملك","👑"]]},
+ "ق":{name:"القاف",tip:"ارجع بمؤخرة اللسان إلى أبعد نقطة قرب الحلق، ثم أطلقها بقوة: ق ق ق. (الخطأ الشائع: النطق «ك» أو همزة).",
+   words:[["قطة","🐱"],["قمر","🌙"],["قرد","🐒"],["قلب","❤️"],["بقرة","🐄"],["ورق","📄"],["فستق","🥜"],["قلم","✏️"]]},
+ "ج":{name:"الجيم",tip:"ارفع وسط اللسان نحو سقف الفم، وابدأ بحبس الهواء ثم أطلقه كاحتكاك خفيف: ج ج ج. (الخطأ الشائع: النطق «د» أو «ز»).",
+   words:[["جمل","🐪"],["جزر","🥕"],["جبل","⛰️"],["جرس","🔔"],["دجاجة","🐔"],["نجمة","⭐"],["تاج","👑"],["ثلج","❄️"],["برج","🗼"]]},
+ "خ":{name:"الخاء",tip:"ارفع مؤخرة اللسان قرب الحلق ودع الهواء يحتك بينهما بدون اهتزاز كأنك تتنحنح بلطف: خخخ. (الخطأ الشائع: النطق «ه» أو «ك»).",
+   words:[["خروف","🐑"],["خبز","🍞"],["خيمة","⛺"],["خيار","🥒"],["نخلة","🌴"],["بطيخ","🍉"],["صاروخ","🚀"]]},
+ "غ":{name:"الغين",tip:"نفس وضع الخاء لكن مع اهتزاز الحنجرة، كأنك تتغرغر: غغغ. ضع يدك على رقبتك لتشعر بالاهتزاز.",
+   words:[["غيمة","☁️"],["غزال","🦌"],["غابة","🌲"],["غسالة","🧺"],["ببغاء","🦜"],["دماغ","🧠"]]},
+ "ع":{name:"العين",tip:"اضغط الحلق قليلًا وأخرج الصوت من عمقه: عععع، كأنك تتثاءب بصوت. (الخطأ الشائع: النطق «أ» أي همزة).",
+   words:[["عنب","🍇"],["عسل","🍯"],["عين","👁️"],["عصفور","🐦"],["ساعة","⏰"],["شمعة","🕯️"],["قلعة","🏰"],["أصبع","☝️"]]},
+ "ح":{name:"الحاء",tip:"ازفر الهواء من الحلق بدون اهتزاز كأنك تنفخ على زجاج لتبخّره: حححح. (الخطأ الشائع: النطق «ه»).",
+   words:[["حصان","🐴"],["حذاء","👟"],["حليب","🥛"],["حوت","🐋"],["نحلة","🐝"],["تفاحة","🍎"],["مفتاح","🔑"],["تمساح","🐊"]]},
+ "ط":{name:"الطاء",tip:"المس اللثة بطرف اللسان وأطلقه بقوة وتفخيم، مع رفع مؤخرة اللسان: ط ط ط. (الخطأ الشائع: النطق «ت» رقيقة).",
+   words:[["طائرة","✈️"],["طماطم","🍅"],["طبل","🥁"],["بطة","🦆"],["بطيخ","🍉"],["بطاطس","🥔"],["قط","🐈"]]},
+ "ض":{name:"الضاد",tip:"اضغط جانب اللسان على الأضراس العليا مع تفخيم الصوت: ض ض ض. (الخطأ الشائع: النطق «د» أو «ظ»).",
+   words:[["ضفدع","🐸"],["ضرس","🦷"],["ضوء","💡"],["ضباب","🌫️"],["بيضة","🥚"],["حوض","🛁"]]},
+ "ذ":{name:"الذال",tip:"ضع طرف اللسان بين الأسنان بخفة مع اهتزاز الحنجرة: ذذذذ. (الخطأ الشائع: النطق «ز» أو «د»).",
+   words:[["ذرة","🌽"],["ذئب","🐺"],["ذهب","🥇"],["ذراع","💪"],["أذن","👂"],["حذاء","👟"]]},
+ "ت":{name:"التاء",tip:"المس اللثة خلف الأسنان العليا بطرف اللسان وأطلقه بخفة مع نفَس: ت ت ت. (تُستخدم أيضًا للتمييز بينها وبين الكاف والطاء).",
+   words:[["تفاحة","🍎"],["تمساح","🐊"],["تاج","👑"],["تلفاز","📺"],["تمرة","🌴"],["بيت","🏠"],["كتاب","📖"]]}
+};
+const LISP=(()=>{const ord=["ر","س","ث","ش","ل","ز","ك","ق","ج","خ","غ","ع","ح","ط","ض","ذ","ت"],o={};
+  ord.forEach(k=>{if(LISP0[k])o[k]=LISP0[k]});return o})();
+const lispPos=(w,L)=>w.indexOf(L)===0?"في أول الكلمة":(w.lastIndexOf(L)===w.length-1?"في آخر الكلمة":"في وسط الكلمة");
+Object.entries(LISP).forEach(([L,d])=>{
+  EX["lisp_"+L]={title:"حرف "+d.name,ico:L,cls:"t-lisp",group:"lisp",L,desc:"تدريب نطق "+d.name,
+    build(){return sample(d.words,6).map(([w,e])=>({kind:"speak",L,w,e,tip:d.tip,pos:lispPos(w,L),say:w,answer:w,prompt:"استمع ثم قُل الكلمة"}))}};
+});
+const GROUPS={
+  memory:{title:"الانتباه والذاكرة",ico:"🧠",cls:"t-memory",sub:"اختر عدد الصور التي ستتذكرها"},
+  lisp:{title:"علاج اللدغة",ico:"👅",cls:"t-lisp",sub:"اختر الحرف الذي ينطقه الطفل خطأ (مثل ر، س، ث) وتدرّب عليه"}
+};
+
+/* ============================================================
+   الملفات الشخصية (تسجيل الدخول على هذا الجهاز)
+   ============================================================ */
+const AVATARS=["🦊","🐼","🐯","🦁","🐸","🐵","🐰","🐻","🦄","🐧","🐶","🐱"];
+const users=()=>Store.get("tk_users",[]);
+const curUser=()=>{const id=Store.get("tk_cur",null);return users().find(u=>u.id===id)||null};
+const nm=m=>{const u=curUser();return u?`${m} يا ${u.name}`:m};
+
+/* ============================================================
+   التقدّم والمستوى
+   ============================================================ */
+const Prog={
+  key(){const u=curUser();return u?"tk_prog_"+u.id:"tk_prog_none"},
+  load(){return Store.get(this.key(),{sessions:[],totalCorrect:0})},
+  save(p){Store.set(this.key(),p)},
+  add(type,correct,total){
+    const p=this.load();
+    p.sessions.push({type,correct,total,pct:Math.round(correct/total*100),t:Date.now()});
+    if(p.sessions.length>300)p.sessions.shift();
+    p.totalCorrect+=correct;
+    this.save(p);return p;
+  },
+  level(p){const per=12;return{lv:Math.floor(p.totalCorrect/per)+1,into:p.totalCorrect%per,per}}
+};
+const starsFor=pct=>pct>=90?3:pct>=60?2:pct>0?1:0;
+
+/* ============================================================
+   واجهة
+   ============================================================ */
+const $=s=>document.querySelector(s);
+const screens=["home","exercise","settings","progress","login","group"];
+let curGroup=null;
+let runId=0; // يُلغي المؤقتات القديمة عند التنقل
+
+function show(id){
+  if(!curUser()&&!["login","settings"].includes(id))id="login";
+  runId++;Sound.stop();Rec.cancel();
+  screens.forEach(s=>$("#"+s).classList.toggle("active",s===id));
+  window.scrollTo({top:0});
+  renderUserBtn();
+  if(id==="home")renderHome();
+  if(id==="settings")renderSettings();
+  if(id==="progress")renderProgress();
+  if(id==="login")renderLogin();
+  if(id==="group")renderGroup();
+}
+function renderUserBtn(){const u=curUser();$("#btnUser").textContent=u?u.avatar:"👤";$("#btnUser").setAttribute("aria-label",u?"المستخدم: "+u.name+" — اضغط للتغيير":"تسجيل الدخول")}
+const later=(ms,fn)=>{const r=runId;return setTimeout(()=>{if(r===runId)fn()},ms)};
+const wait=ms=>{const r=runId;return new Promise(res=>setTimeout(()=>res(r===runId),ms))};
+
+function bestStars(keys,p){return Math.max(0,...p.sessions.filter(s=>keys.includes(s.type)).map(s=>starsFor(s.pct)))}
+function tileHtml(attr,e,title,best,desc){
+  return`<button class="tile ${e.cls}" ${attr}><span class="ico">${e.ico}</span>${title}${desc?`<small style="font-weight:600;font-size:.72rem;opacity:.9">${desc}</small>`:""}<span class="st" aria-label="${best} من 3 نجوم">${"⭐".repeat(best)}${"☆".repeat(3-best)}</span></button>`;
+}
+function renderHome(){
+  const u=curUser();
+  const p=Prog.load();
+  const n=p.sessions.length;
+  const avg=n?Math.round(p.sessions.reduce((a,s)=>a+s.pct,0)/n):0;
+  const L=Prog.level(p);
+  $("#stSessions").textContent=n;
+  $("#stAvg").textContent=avg+"%";
+  $("#stLevel").textContent=L.lv;
+  $("#lvFill").style.width=(L.into/L.per*100)+"%";
+  $("#lvTxt").textContent=`${L.per-L.into} إجابات صحيحة للوصول للمستوى ${L.lv+1}`;
+  const hello=u?`أهلاً يا ${u.name}! اختر التدريب الذي تحبه.`:"أهلاً بك!";
+  $("#helloTxt").textContent=hello+" 👇";
+  $("#helloBtn").dataset.say=hello;
+  let html="";
+  ["vocab","sound","sentence"].forEach(k=>{html+=tileHtml(`data-ex="${k}"`,EX[k],EX[k].title,bestStars([k],p))});
+  Object.entries(GROUPS).forEach(([g,d])=>{
+    const keys=Object.keys(EX).filter(k=>EX[k].group===g);
+    html+=tileHtml(`data-group="${g}"`,d,d.title,bestStars(keys,p));
+  });
+  $("#menu").innerHTML=html;
+  renderVoiceWarn();
+}
+function renderGroup(){
+  const g=GROUPS[curGroup];if(!g){show("home");return}
+  const p=Prog.load();
+  $("#groupTitle").textContent=g.ico+" "+g.title;$("#groupSub").textContent=g.sub;
+  $("#groupMenu").innerHTML=Object.entries(EX).filter(([k,e])=>e.group===curGroup).map(([k,e])=>
+    tileHtml(`data-ex="${k}"`,e,e.title,bestStars([k],p),e.desc)).join("");
+}
+
+function voiceHelpText(){
+  const ua=navigator.userAgent;
+  if(/Android/i.test(ua))return"على أندرويد: الإعدادات ← النظام ← اللغات والإدخال ← الإخراج الصوتي (Text-to-speech) ← ثبّت «العربية» من محرك Google.";
+  if(/iPhone|iPad|Mac/i.test(ua))return"على آبل: الإعدادات ← تسهيلات الاستخدام ← المحتوى المنطوق ← الأصوات ← العربية، ثم نزّل صوتًا (مثل Majed أو Tarik).";
+  if(/Windows/i.test(ua))return"على ويندوز: الإعدادات ← الوقت واللغة ← الكلام ← إضافة أصوات ← العربية. أو افتح المشروع في Microsoft Edge فهو يوفّر أصواتًا عربية طبيعية.";
+  return"ثبّت حزمة صوت عربية في نظام التشغيل، أو افتح المشروع في Microsoft Edge / Chrome على جهاز عليه صوت عربي.";
+}
+function renderVoiceWarn(){
+  const el=$("#voiceWarn");
+  if(!Settings.voice){el.innerHTML="";return}
+  if(!Sound.supported){
+    el.innerHTML=`<div class="warn"><b>🔇 المتصفح لا يدعم النطق</b>جرّب Chrome أو Edge أو Safari حديث.</div>`;return}
+  if(!Sound.hasArabic()&&Sound.allCount()>0){
+    el.innerHTML=`<div class="warn"><b>🔇 لا يوجد صوت عربي على هذا الجهاز</b>${esc(voiceHelpText())}</div>`;
+  }else el.innerHTML="";
+}
+
+/* ---------- تمرين ---------- */
+let S=null; // الجلسة الحالية
+function startExercise(type){
+  Sound.unlock();Sound.sfx("tap");
+  S={type,group:EX[type].group||null,qs:EX[type].build(),i:0,correct:0,tries:0,locked:false};
+  show("exercise");
+  showQ();
+}
+function leaveExercise(){if(S&&S.group){curGroup=S.group;show("group")}else show("home")}
+
+function sayBtn(text,cls="",label="اسمع",rate=null,txt=" اسمع"){
+  return Settings.voice?`<button class="say ${cls}" data-say="${esc(text)}" ${rate?`data-rate="${rate}"`:""} aria-label="${label}">${cls.includes("mini")?"🔊":(rate?"🐢":"🔊")+txt}</button>`:"";
+}
+
+function showQ(){
+  const q=S.qs[S.i];
+  S.tries=0;S.locked=false;
+  $("#bar").style.width=(S.i/S.qs.length*100)+"%";
+  $("#qcount").textContent=`${S.i+1}/${S.qs.length}`;
+  const card=$("#qcard");
+  const chip=`<div class="center"><span class="chip">${EX[S.type].ico.length<3?EX[S.type].ico+" ":""}${esc(EX[S.type].title)}</span></div>`;
+  if(q.kind==="speak"){showSpeak(q,chip);return}
+  let top="";
+  if(q.kind==="pic")top=`<div class="pic ${q.pair?"pair":""}" role="img" aria-label="صورة السؤال">${q.pic}</div>`;
+  if(q.kind==="letter")top=`<div class="letter" aria-hidden="true">${q.letter}</div>`;
+  if(q.kind==="hear")top=`<div class="pic" aria-hidden="true">👂</div>`;
+  if(q.kind==="memory")top=`<div class="pic seq n${q.seq.length}" id="seq">${q.seq.map((t,k)=>`<div class="it" data-k="${k}"><span aria-hidden="true">❔</span><small>&nbsp;</small></div>`).join("")}</div>`;
+  const one=q.choices.length&&q.choices.every(c=>c.sentence);
+  card.innerHTML=`${chip}${top}
+    <div class="prompt">${esc(q.prompt)}</div>
+    ${q.kind==="memory"?"":`<div class="listen">${sayBtn(q.say,"","اسمع السؤال")}</div>`}
+    <div class="choices ${one?"c1":"c2"}" id="choices" ${q.kind==="memory"?'hidden':""}>
+      ${q.choices.map(c=>`<div class="chwrap"><button class="choice ${c.sentence?"sentence":""}" data-id="${esc(c.id)}" ${c.aria?`aria-label="${esc(c.aria)}"`:""}>
+        ${c.em?`<span class="em">${c.em}</span>`:""}${c.label?`<span>${esc(c.label)}</span>`:""}</button>${c.say&&q.kind!=="hear"?sayBtn(c.say,"mini","اسمع "+c.say):""}</div>`).join("")}
+    </div>
+    <div class="feedback" id="fb" aria-live="assertive"></div>
+    <div class="note">${Settings.voice?"اضغط 🔊 لسماع السؤال أو الاختيار":""}</div>`;
+  if(q.kind==="memory")runMemory(q);
+  else if(Settings.voice&&Settings.auto)later(450,()=>Sound.speak(q.say,{btn:card.querySelector(".listen .say")}));
+}
+
+/* ---------- تدريب النطق (اللدغة) ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const normAr=t=>String(t).replace(/[ً-ٰٟـ]/g,"").replace(/[إأآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g,"").replace(/^ال/,"");
+function listenOnce(){
+  return new Promise(res=>{
+    let done=false;const fin=v=>{if(!done){done=true;res(v)}};
+    try{
+      const r=new SR();r.lang="ar-EG";r.maxAlternatives=5;r.interimResults=false;
+      r.onresult=e=>fin({alts:[...e.results[0]].map(a=>a.transcript)});
+      r.onerror=e=>fin({error:e.error||"error"});
+      r.onend=()=>fin({alts:[]});
+      r.start();setTimeout(()=>{try{r.stop()}catch(e){}},5000);
+    }catch(e){fin({error:"start"})}
+  });
+}
+function showSpeak(q,chip){
+  Rec.cancel();
+  const hl=esc(q.w).split(esc(q.L)).join(`<mark>${esc(q.L)}</mark>`);
+  $("#qcard").innerHTML=`${chip}
+    <div class="pic" role="img" aria-label="${esc(q.w)}">${q.e}</div>
+    <div class="bigword">${hl}</div>
+    <div class="center"><span class="chip">حرف ${esc(LISP[q.L].name)} ${q.pos}</span></div>
+    <div class="listen" style="gap:10px">${sayBtn(q.w,"","اسمع الكلمة"," اسمع")}${sayBtn(q.w,"slow","اسمع ببطء",.5," ببطء")}</div>
+    <details class="tipbox"><summary>💡 كيف أنطق حرف ${esc(LISP[q.L].name)}؟</summary>${esc(q.tip)}<br>${sayBtn(q.tip,"","اسمع الشرح")}</details>
+    <div class="prompt" style="font-size:1.1rem">الآن قلها بصوتك 🗣️</div>
+    <div class="listen" style="gap:10px;flex-wrap:wrap"><button class="mic" id="mic">🎤 سجّل صوتك</button>${SR?`<button class="mic alt" id="autoChk">🤖 تحقق تلقائي</button>`:""}</div>
+    <div id="mine"></div><div id="heard"></div>
+    <div class="note" style="margin:6px 0">قيّم النطق (بمساعدة الأهل أو الأخصائي):</div>
+    <div class="row"><button class="btn rate" data-r="ok">😀 نطقها صح</button><button class="btn light rate" data-r="again">🔁 نعيدها</button></div>
+    <div class="feedback" id="fb" aria-live="assertive"></div>`;
+  S.locked=false;
+  if(Settings.voice&&Settings.auto)later(450,()=>Sound.speak(q.w,{rate:Math.min(Settings.rate,.6)}));
+}
+/* ---------- تسجيل صوت الطفل وإعادته له (لا يحتاج إنترنت) ---------- */
+const Rec={mr:null,stream:null,chunks:[],timer:null,url:null,
+  cancel(){clearTimeout(this.timer);try{if(this.mr&&this.mr.state!=="inactive"){this.mr.onstop=null;this.mr.stop()}}catch(e){}
+    if(this.stream){this.stream.getTracks().forEach(t=>t.stop());this.stream=null}this.mr=null;
+    if(this.url){URL.revokeObjectURL(this.url);this.url=null}},
+  stop(){clearTimeout(this.timer);try{this.mr&&this.mr.state!=="inactive"&&this.mr.stop()}catch(e){}}
+};
+function micErrText(e){
+  const n=(e&&(e.name||e.error||e.message))||"";
+  if(n==="unsupported"||!navigator.mediaDevices)return"هذا المتصفح لا يدعم تسجيل الصوت. جرّب Chrome أو Edge أو Safari حديث"+(window.isSecureContext?"":"، وافتح الصفحة عبر https أو localhost")+".";
+  if(/NotAllowed|not-allowed|service-not-allowed|Permission/i.test(n)){if(window.top!==window.self)return"الميكروفون غير متاح داخل هذه الصفحة المستضافة. استخدم التقييم اليدوي بالأسفل، أو شغّل نسخة الملف (index.html) على جهازك من Chrome لتسجيل الصوت.";}
+  if(/NotAllowed|not-allowed|service-not-allowed|Permission/i.test(n))return"الميكروفون غير مسموح. اضغط أيقونة القفل 🔒 بجانب عنوان الصفحة ← اسمح بالميكروفون ← أعد المحاولة. (ولو فتحتَ الملف مباشرة من الجهاز جرّب فتحه عبر Chrome أو رفعه على موقع https)";
+  if(/NotFound|DevicesNotFound|audio-capture/i.test(n))return"لا يوجد ميكروفون متصل بالجهاز.";
+  if(/NotReadable|TrackStart/i.test(n))return"الميكروفون مستخدم في تطبيق آخر. أغلقه وأعد المحاولة.";
+  if(/no-speech/i.test(n))return"لم أسمع صوتًا. اقترب من الميكروفون وقل الكلمة بوضوح.";
+  if(/network/i.test(n))return"التحقق التلقائي يحتاج اتصالًا بالإنترنت. استخدم «سجّل صوتك» وقيّم يدويًا.";
+  if(/aborted/i.test(n))return"توقّف التسجيل. حاول مرة أخرى.";
+  return"تعذّر استخدام الميكروفون ("+n+"). استخدم التقييم اليدوي بالأسفل.";
+}
+async function onMic(btn){ // تسجيل + إعادة تشغيل
+  if(S.locked)return;
+  const box=$("#heard"),mine=$("#mine");
+  if(Rec.mr&&Rec.mr.state==="recording"){Rec.stop();return}
+  Sound.stop();Rec.cancel();box.innerHTML="";mine.innerHTML="";
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||typeof MediaRecorder==="undefined")throw{name:"unsupported"};
+    Rec.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const types=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"];
+    const mt=types.find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t));
+    Rec.mr=mt?new MediaRecorder(Rec.stream,{mimeType:mt}):new MediaRecorder(Rec.stream);
+  }catch(e){Rec.cancel();box.innerHTML=`<div class="heard">⚠️ ${esc(micErrText(e))}</div>`;return}
+  Rec.chunks=[];
+  const mr=Rec.mr,stream=Rec.stream;
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)Rec.chunks.push(e.data)};
+  mr.onstop=()=>{
+    btn.classList.remove("rec");btn.textContent="🎤 سجّل صوتك";
+    stream.getTracks().forEach(t=>t.stop());
+    if(!Rec.chunks.length){box.innerHTML=`<div class="heard">لم يُسجَّل صوت، حاول مرة أخرى 🙂</div>`;return}
+    const blob=new Blob(Rec.chunks,{type:mr.mimeType||"audio/webm"});
+    Rec.url=URL.createObjectURL(blob);
+    const el=$("#mine");if(!el)return;
+    el.innerHTML=`<div class="heard">🎧 اسمع صوتك ثم قارنه بالكلمة الصحيحة<br><audio id="mineAudio" controls src="${Rec.url}" style="width:100%;margin-top:6px"></audio></div>`;
+    const a=$("#mineAudio");if(a)a.play().catch(()=>{});
+  };
+  mr.start();
+  btn.classList.add("rec");btn.textContent="⏹️ إيقاف (٤ ثوانٍ كحد أقصى)";
+  Rec.timer=setTimeout(()=>Rec.stop(),4000);
+}
+async function onAuto(btn){ // التحقق التلقائي (تجريبي)
+  if(S.locked||!SR)return;
+  const q=S.qs[S.i];Sound.stop();Rec.cancel();
+  const box=$("#heard");$("#mine").innerHTML="";
+  btn.classList.add("rec");btn.textContent="🤖 أسمعك… تكلّم الآن";
+  const r=await listenOnce();
+  btn.classList.remove("rec");btn.textContent="🤖 تحقق تلقائي";
+  if(!$("#heard")||S.locked)return;
+  if(r.error){box.innerHTML=`<div class="heard">⚠️ ${esc(micErrText({name:r.error}))}</div>`;return}
+  const target=normAr(q.w);
+  const hit=r.alts.some(a=>{const n=normAr(a);return n===target||n.includes(target)});
+  box.innerHTML=r.alts.length?`<div class="heard">سمعتُ: <b>${esc(r.alts[0])}</b>${hit?" ✅":""}</div>`:`<div class="heard">لم أسمع شيئًا، حاول مرة أخرى 🙂</div>`;
+  if(hit)rateWord(true);
+  else if(r.alts.length){S.tries++;Sound.sfx("wrong");if(Settings.voice)Sound.speak(nm("حاول مرة أخرى")+"، اسمعها ثم قلها")}
+}
+
+function rateWord(ok){
+  if(S.locked)return;
+  const q=S.qs[S.i],fb=$("#fb");
+  if(ok){
+    S.locked=true;if(S.tries===0)S.correct++;
+    document.querySelectorAll(".rate,.mic,#autoChk").forEach(b=>b.disabled=true);
+    const msg=nm(PRAISE[rnd(PRAISE.length)]);
+    fb.className="feedback ok";fb.textContent="✅ "+msg+"!";
+    Sound.sfx("right");if(Settings.voice)later(350,()=>Sound.speak(msg));
+    later(1800,next);
+  }else{
+    S.tries++;Sound.sfx("wrong");
+    if(S.tries>=3){S.locked=true;fb.className="feedback no";fb.textContent="سنراجعها لاحقًا 💪";later(1800,next);return}
+    fb.className="feedback no";fb.textContent="🙂 "+nm("لنحاول مرة أخرى");
+    if(Settings.voice)later(300,()=>Sound.speak(q.w,{rate:.5}));
+  }
+}
+
+/* عرض تسلسل الذاكرة: تظهر الصور وتُنطق ثم تختفي */
+async function runMemory(q){
+  const r=runId;S.locked=true;
+  const items=[...document.querySelectorAll("#seq .it")];
+  const ok=await wait(500);if(!ok)return;
+  const head=$("#fb");head.className="feedback";head.textContent="👀 انظر وتذكّر…";
+  for(let k=0;k<q.seq.length;k++){
+    const t=q.seq[k],it=items[k];
+    it.classList.add("on","done");
+    it.querySelector("span").textContent=t.e;
+    it.querySelector("small").textContent=t.w;
+    Sound.sfx("tap");
+    if(Settings.voice)await Sound.speak(t.w);
+    if(r!==runId)return;
+    if(!(await wait(Settings.voice?350:1500)))return;
+    it.classList.remove("on");
+  }
+  if(!(await wait(900)))return;
+  // إخفاء التسلسل ثم السؤال
+  items.forEach(it=>{it.classList.remove("done");it.querySelector("span").textContent="❔";it.querySelector("small").innerHTML="&nbsp;"});
+  head.textContent="";
+  $("#choices").hidden=false;
+  S.locked=false;
+  $("#qcard .note").textContent=Settings.voice?"اضغط 🔊 بجانب أي اختيار لسماعه":"";
+  const prompt=$(".prompt");
+  prompt.insertAdjacentHTML("afterend",`<div class="listen">${sayBtn(q.say,"","اسمع السؤال")}</div>`);
+  if(Settings.voice)Sound.speak(q.say,{btn:document.querySelector(".listen .say")});
+}
+
+const PRAISE=["أحسنت","ممتاز","رائع","برافو","شاطر"];
+const RETRY=["حاول مرة أخرى","فكّر قليلًا وحاول","قريب! جرّب مرة ثانية"];
+
+function onAnswer(btn){
+  if(S.locked)return;
+  const q=S.qs[S.i];const id=btn.dataset.id;
+  const fb=$("#fb");
+  const all=[...document.querySelectorAll(".choice")];
+  if(id===q.answer){
+    S.locked=true;
+    if(S.tries===0)S.correct++;
+    btn.classList.add("right");all.forEach(b=>b.disabled=true);
+    const msg=nm(PRAISE[rnd(PRAISE.length)]);
+    fb.className="feedback ok";fb.textContent="✅ "+msg+"!";
+    Sound.sfx("right");
+    if(Settings.voice)later(350,()=>Sound.speak(msg));
+    later(1700,next);
+  }else{
+    S.tries++;
+    btn.classList.add("wrong");btn.disabled=true;
+    Sound.sfx("wrong");
+    if(S.tries>=2){
+      S.locked=true;all.forEach(b=>{b.disabled=true;if(b.dataset.id===q.answer)b.classList.add("right")});
+      fb.className="feedback no";fb.textContent="الإجابة الصحيحة: "+(q.choices.find(c=>c.id===q.answer).label||"هذه");
+      if(Settings.voice)later(350,()=>Sound.speak(q.choices.find(c=>c.id===q.answer).say));
+      later(2800,next);
+    }else{
+      const msg=nm(RETRY[rnd(RETRY.length)]);
+      fb.className="feedback no";fb.textContent="🙂 "+msg;
+      if(Settings.voice)later(300,()=>Sound.speak(msg));
+    }
+  }
+}
+function next(){S.i++;S.i>=S.qs.length?finish():showQ()}
+
+function finish(){
+  const total=S.qs.length,pct=Math.round(S.correct/total*100),st=starsFor(pct);
+  const before=Prog.level(Prog.load()).lv;
+  const p=Prog.add(S.type,S.correct,total);
+  const after=Prog.level(p).lv;
+  $("#bar").style.width="100%";$("#qcount").textContent="";
+  const msg=nm(pct>=90?"ممتاز جدًا! أنت بطل":pct>=60?"أحسنت! استمر هكذا":"محاولة جميلة! لنجرّب مرة أخرى");
+  const spoken=`${msg}. أجبت عن ${S.correct} من ${total} بشكل صحيح.`;
+  const ex=EX[S.type];
+  const nextKey=ex.n&&ex.n<6&&pct>=60?"mem"+(ex.n+1):null;
+  $("#qcard").innerHTML=`<div class="finish">
+    <div class="stars" aria-label="${st} من 3 نجوم">${[0,1,2].map(i=>`<span class="${i<st?"":"off"}">⭐</span>`).join("")}</div>
+    <div class="big">🎉 ${esc(msg)}!</div>
+    <div class="note">الإجابات الصحيحة من أول مرة: ${S.correct} من ${total} (${pct}%)</div>
+    ${after>before?`<div class="big" style="color:var(--purple)">⬆️ وصلت إلى المستوى ${after}!</div>`:""}
+    <div class="listen">${sayBtn(spoken,"","اسمع النتيجة")}</div>
+    ${nextKey?`<button class="btn" id="nextLvl">⬆️ ${EX[nextKey].title}</button>`:""}
+    <div class="row"><button class="btn ${nextKey?"light":""}" id="again">🔁 مرة أخرى</button><button class="btn light" id="backBtn">${S.group?"رجوع":"الرئيسية"}</button></div></div>`;
+  const t=S.type;
+  $("#again").onclick=()=>startExercise(t);
+  $("#backBtn").onclick=leaveExercise;
+  if(nextKey)$("#nextLvl").onclick=()=>startExercise(nextKey);
+  Sound.sfx(st>0?"win":"wrong");
+  if(Settings.voice)later(900,()=>Sound.speak(spoken));
+}
+
+/* ---------- الإعدادات ---------- */
+function setSwitch(el,v){el.setAttribute("aria-checked",v)}
+function renderSettings(){
+  setSwitch($("#swVoice"),Settings.voice);setSwitch($("#swSfx"),Settings.sfx);setSwitch($("#swAuto"),Settings.auto);
+  document.querySelectorAll("#segRate button").forEach(b=>b.setAttribute("aria-pressed",String(parseFloat(b.dataset.rate)===Settings.rate)));
+  fillVoices();
+  const u=curUser();$("#curUserInfo").textContent=u?u.avatar+" "+u.name:"لا يوجد مستخدم";
+  $("#btnDelUser").disabled=!u;
+}
+function fillVoices(){
+  const sel=$("#selVoice");if(!sel)return;
+  const ar=Sound.arVoices();const cur=Sound.pickVoice();
+  sel.innerHTML=ar.length?ar.map(v=>`<option value="${esc(v.voiceURI)}" ${cur&&cur.voiceURI===v.voiceURI?"selected":""}>${esc(v.name)} (${esc(v.lang)})</option>`).join(""):`<option value="">— لا توجد أصوات عربية —</option>`;
+  sel.disabled=!ar.length;
+  $("#voiceInfo").textContent=ar.length?`${ar.length} صوت عربي متاح`:"";
+  $("#voiceHelp").innerHTML=(!Sound.supported)
+    ?`<div class="warn"><b>المتصفح لا يدعم النطق.</b></div>`
+    :(!ar.length&&Sound.allCount()>0)?`<div class="warn"><b>🔇 لا يوجد صوت عربي على جهازك</b>${esc(voiceHelpText())}</div>`:"";
+}
+Sound.onChange(()=>{fillVoices();renderVoiceWarn()});
+
+function renderProgress(){
+  const p=Prog.load(),u=curUser();
+  if(!p.sessions.length){$("#progBody").innerHTML=`<p>لا توجد جلسات لـ ${esc(u?u.name:"")} بعد. ابدأ تدريبًا لتظهر النتائج هنا.</p>`;$("#progLog").innerHTML="";return}
+  const rows=Object.entries(EX).filter(([k])=>p.sessions.some(s=>s.type===k)).map(([k,e])=>{
+    const ss=p.sessions.filter(s=>s.type===k);
+    const avg=Math.round(ss.reduce((a,s)=>a+s.pct,0)/ss.length),best=Math.max(...ss.map(s=>s.pct));
+    const last=ss.slice(-8);
+    return`<tr><td>${e.ico} ${e.title}<div class="mini-bar"><i style="width:${avg}%"></i></div></td><td>${ss.length}</td><td>${avg}%</td><td>${best}%</td>
+      <td><div class="hist" aria-hidden="true">${last.map(s=>`<i style="height:${Math.max(6,s.pct*.44)}px" title="${s.pct}%"></i>`).join("")}</div></td></tr>`;
+  }).join("");
+  $("#progBody").innerHTML=`<div class="sub2">${u?u.avatar+" "+esc(u.name):""}</div><table><thead><tr><th>التدريب</th><th>مرات</th><th>المتوسط</th><th>الأفضل</th><th>آخر النتائج</th></tr></thead><tbody>${rows}</tbody></table>`;
+  $("#progLog").innerHTML=`<table><thead><tr><th>التدريب</th><th>النتيجة</th><th>التاريخ</th></tr></thead><tbody>${
+    p.sessions.slice(-10).reverse().map(s=>`<tr><td>${EX[s.type]?EX[s.type].ico+" "+EX[s.type].title:s.type}</td><td>${s.correct}/${s.total} (${s.pct}%)</td><td>${new Date(s.t).toLocaleDateString("ar-EG",{day:"numeric",month:"short"})} ${new Date(s.t).toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"})}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* ---------- تسجيل الدخول / الملفات ---------- */
+let formOpen=false,pickedAv=AVATARS[0];
+function renderLogin(){
+  const us=users(),cu=curUser();
+  $("#loginList").innerHTML=us.map(u=>`<button class="user ${cu&&cu.id===u.id?"cur":""}" data-user="${u.id}"><span class="av">${u.avatar}</span>${esc(u.name)}</button>`).join("")+
+    `<button class="user add" id="addUser"><span class="av">➕</span>طفل جديد</button>`;
+  const open=formOpen||!us.length;
+  $("#loginForm").hidden=!open;
+  $("#avs").innerHTML=AVATARS.map(a=>`<button type="button" data-av="${a}" aria-pressed="${a===pickedAv}" aria-label="صورة ${a}">${a}</button>`).join("");
+  $("#loginErr").textContent="";
+}
+function loginAs(id,greet=true){
+  Store.set("tk_cur",id);formOpen=false;
+  show("home");
+  const u=curUser();
+  if(greet&&u&&Settings.voice)later(300,()=>Sound.speak(`أهلاً يا ${u.name}! هيا نلعب.`));
+}
+function createUser(){
+  const name=$("#nameIn").value.trim().replace(/\s+/g," ");
+  const err=$("#loginErr");
+  if(!name){err.textContent="اكتب الاسم أولًا";return}
+  const us=users();
+  if(us.some(u=>u.name===name)){err.textContent="هذا الاسم موجود، اختره من القائمة";return}
+  const u={id:Date.now().toString(36),name,avatar:pickedAv};
+  us.push(u);Store.set("tk_users",us);
+  // نقل نتائج النسخة السابقة (قبل الملفات) لأول ملف
+  const old=Store.get("tk_prog",null);
+  if(old&&us.length===1){Store.set("tk_prog_"+u.id,old);Store.del("tk_prog")}
+  $("#nameIn").value="";
+  loginAs(u.id);
+}
+function deleteUser(){
+  const u=curUser();if(!u)return;
+  Store.set("tk_users",users().filter(x=>x.id!==u.id));
+  Store.del("tk_prog_"+u.id);Store.del("tk_cur");
+  show("login");
+}
+
+/* ---------- ربط الأحداث (تفويض واحد) ---------- */
+document.addEventListener("click",e=>{
+  const say=e.target.closest("[data-say]");
+  if(say){e.stopPropagation();Sound.unlock();Sound.speak(say.dataset.say,{btn:say,force:true,rate:say.dataset.rate?parseFloat(say.dataset.rate):null});return}
+  const ch=e.target.closest(".choice");
+  if(ch&&S&&$("#exercise").classList.contains("active")){onAnswer(ch);return}
+  const rt=e.target.closest(".rate");if(rt){rateWord(rt.dataset.r==="ok");return}
+  const mic=e.target.closest("#mic");if(mic){onMic(mic);return}
+  const ac=e.target.closest("#autoChk");if(ac){onAuto(ac);return}
+  const us=e.target.closest("[data-user]");if(us){loginAs(us.dataset.user);return}
+  if(e.target.closest("#addUser")){formOpen=true;renderLogin();$("#nameIn").focus();return}
+  const av=e.target.closest("[data-av]");if(av){pickedAv=av.dataset.av;document.querySelectorAll("#avs button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.av===pickedAv)));return}
+  const gr=e.target.closest("[data-group]");if(gr){curGroup=gr.dataset.group;show("group");return}
+  const ex=e.target.closest("[data-ex]");if(ex){startExercise(ex.dataset.ex);return}
+  const go=e.target.closest("[data-go]");if(go){show(go.dataset.go);return}
+});
+$("#btnCreate").onclick=createUser;
+$("#nameIn").addEventListener("keydown",e=>{if(e.key==="Enter")createUser()});
+$("#btnBack").onclick=leaveExercise;
+$("#btnUser").onclick=()=>show("login");
+$("#btnSettings").onclick=()=>show("settings");
+$("#btnProgress").onclick=()=>show("progress");
+$("#swVoice").onclick=()=>{Settings.voice=!Settings.voice;if(!Settings.voice)Sound.stop();saveSettings();renderSettings()};
+$("#swSfx").onclick=()=>{Settings.sfx=!Settings.sfx;saveSettings();renderSettings();Sound.sfx("right")};
+$("#swAuto").onclick=()=>{Settings.auto=!Settings.auto;saveSettings();renderSettings()};
+document.querySelectorAll("#segRate button").forEach(b=>b.onclick=()=>{Settings.rate=parseFloat(b.dataset.rate);saveSettings();renderSettings();Sound.speak("هكذا تكون سرعة الكلام",{force:true})});
+$("#selVoice").onchange=e=>{Settings.voiceURI=e.target.value;saveSettings();Sound.speak("مرحبًا، أنا صوتك الجديد",{force:true})};
+$("#btnTest").onclick=()=>Sound.speak("مرحبًا! أنا بومة تَكَلَّم. هيا نتعلم معًا.",{force:true,btn:$("#btnTest")});
+function twoTap(btn,ask,fn){
+  const orig=btn.dataset.orig||(btn.dataset.orig=btn.textContent);
+  btn.addEventListener("click",()=>{
+    if(btn.dataset.armed){clearTimeout(btn._t);delete btn.dataset.armed;btn.textContent=orig;fn();return}
+    btn.dataset.armed="1";btn.textContent=ask;
+    btn._t=setTimeout(()=>{delete btn.dataset.armed;btn.textContent=orig},4000);
+  });
+}
+twoTap($("#btnReset"),"اضغط مرة أخرى للتأكيد ⚠️",()=>{Store.del(Prog.key());show("home")});
+twoTap($("#btnDelUser"),"اضغط مرة أخرى لحذف الملف ⚠️",deleteUser);
+// ترحيل بيانات النسخة الأولى (قبل الملفات)
+try{
+  const os=Number(localStorage.getItem("sessions")||0),osc=Number(localStorage.getItem("score")||0);
+  if(os&&!Store.get("tk_prog",null)){
+    const p={sessions:[],totalCorrect:0};
+    for(let i=0;i<os;i++)p.sessions.push({type:"vocab",correct:Math.round(osc/100*6),total:6,pct:osc,t:Date.now()});
+    Store.set("tk_prog",p);
+  }
+  localStorage.removeItem("sessions");localStorage.removeItem("score");
+}catch(e){}
+show(curUser()?"home":"login");
+</script>
+
+</body></html>
