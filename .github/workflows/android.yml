@@ -123,8 +123,23 @@ jobs:
         run: |
           sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application#' android/app/src/main/AndroidManifest.xml
 
+      - name: Set version number
+        run: |
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i "s/versionName \"[^\"]*\"/versionName \"1.${{ github.run_number }}\"/" android/app/build.gradle
+
       - name: Sync web files
         run: npx cap sync android
+
+      - name: Get signing key
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download keystore --pattern release.keystore --repo ${{ github.repository }} || true
+          if [ ! -f release.keystore ]; then
+            keytool -genkeypair -keystore release.keystore -alias takallam -keyalg RSA -keysize 2048 -validity 36500 -storepass takallam123 -keypass takallam123 -dname "CN=Takallam"
+            gh release create keystore release.keystore --title "keystore" --notes "signing key" --prerelease --repo ${{ github.repository }}
+          fi
 
       - name: Build debug APK
         run: |
@@ -132,16 +147,21 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+      - name: Sign APK with permanent key
+        run: |
+          APKSIGNER=$(ls $ANDROID_HOME/build-tools/*/apksigner | sort -V | tail -1)
+          $APKSIGNER sign --ks release.keystore --ks-key-alias takallam --ks-pass pass:takallam123 --key-pass pass:takallam123 --out takallam.apk android/app/build/outputs/apk/debug/app-debug.apk
+          $APKSIGNER verify takallam.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Takallam-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: takallam.apk
 
       - name: Publish release with direct link
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk takallam.apk
           gh release delete latest --cleanup-tag --yes --repo ${{ github.repository }} || true
           gh release create latest takallam.apk --repo ${{ github.repository }} --title "Takallam APK" --notes "Latest build" --latest
