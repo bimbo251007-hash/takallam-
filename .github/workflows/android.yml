@@ -35,17 +35,21 @@ jobs:
           cat > www/tts-native.js <<'EOF'
           (function(){
             var C=window.Capacitor;
-            if(!C||!C.isNativePlatform||!C.isNativePlatform())return;
-            var TTS=C.registerPlugin("TextToSpeech");
+            var native=false;
+            try{native=!!(C&&C.isNativePlatform&&C.isNativePlatform())}catch(e){}
+            if(!native&&!/; wv\)/.test(navigator.userAgent))return;
+            var TTS=null;
+            try{TTS=(C&&C.Plugins&&C.Plugins.TextToSpeech)||(C&&C.registerPlugin&&C.registerPlugin("TextToSpeech"))}catch(e){}
             var gen=0,langP=null,audio=null,shown=false;
             function msg(t){
               if(shown||!document.body)return;shown=true;
               var d=document.createElement("div");
               d.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#fff3cd;color:#000;padding:10px;font-size:13px;z-index:99999;direction:ltr";
-              d.textContent=t;d.onclick=function(){d.remove()};
+              d.textContent=t+" | plugin:"+(TTS?"yes":"no");d.onclick=function(){d.remove()};
               document.body.appendChild(d);
             }
             function getLang(){
+              if(!TTS)return Promise.resolve(null);
               if(!langP)langP=TTS.getSupportedLanguages().then(function(r){
                 var l=(r&&r.languages)||[];
                 return l.filter(function(x){return x==="ar-EG"})[0]||l.filter(function(x){return /^ar/i.test(x)})[0]||null;
@@ -53,6 +57,7 @@ jobs:
               return langP;
             }
             function nativeSpeak(u){
+              if(!TTS)return Promise.reject(new Error("tts plugin missing"));
               return getLang().then(function(L){
                 if(!L)throw new Error("no arabic voice on device");
                 var t0=Date.now();
@@ -93,7 +98,7 @@ jobs:
               resume:function(){},
               cancel:function(){
                 gen++;
-                TTS.stop().catch(function(){});
+                if(TTS){try{TTS.stop().catch(function(){})}catch(e){}}
                 if(audio){try{audio.pause()}catch(e){}audio=null}
               },
               speak:function(u){
